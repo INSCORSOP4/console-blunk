@@ -1,0 +1,8 @@
+services:
+  web:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      API_URL: ${API_URL:?Define API_URL (URL interna de la API de soporte)}
+    restart: unless-stopped

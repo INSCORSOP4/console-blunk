@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="42.0 28.5 291.0 428.8" role="img" aria-label="Linki saludando"><title>Linki saludando</title>
+<defs>
+<linearGradient id="lkBodyHola" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6A5CFF"/><stop offset="1" stop-color="#2E22B8"/></linearGradient>
+<radialGradient id="lkShadowHola" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#14123A" stop-opacity="0.22"/><stop offset="0.6" stop-color="#14123A" stop-opacity="0.10"/><stop offset="1" stop-color="#14123A" stop-opacity="0"/></radialGradient>
+</defs><path d="M114 282 Q72 262 64 216" fill="none" stroke="#3F30DC" stroke-width="24" stroke-linecap="round"/><ellipse cx="200" cy="440" rx="118" ry="16" fill="url(#lkShadowHola)"/>
+<rect x="152" y="360" width="36" height="66" rx="18" fill="#1F1D4F"/>
+<rect x="212" y="360" width="36" height="66" rx="18" fill="#1F1D4F"/>
+<ellipse cx="164" cy="428" rx="30" ry="14" fill="#1F1D4F"/>
+<ellipse cx="236" cy="428" rx="30" ry="14" fill="#1F1D4F"/>
+<line x1="200" y1="96" x2="200" y2="118" stroke="#A39BFF" stroke-width="8" stroke-linecap="round"/>
+<rect x="166" y="34" width="30" height="60" rx="15" fill="none" stroke="#A39BFF" stroke-width="10" transform="rotate(-35 181 64)"/>
+<rect x="204" y="34" width="30" height="60" rx="15" fill="none" stroke="#F5A623" stroke-width="10" transform="rotate(35 219 64)"/>
+<rect x="105" y="110" width="190" height="280" rx="95" fill="url(#lkBodyHola)"/>
+<ellipse cx="200" cy="312" rx="62" ry="56" fill="#8A7FFF" opacity="0.45"/>
+<path d="M100 205 A100 100 0 0 1 300 205" fill="none" stroke="#1F1D4F" stroke-width="12" stroke-linecap="round"/>
+<rect x="84" y="184" width="32" height="58" rx="15" fill="#1F1D4F"/>
+<rect x="284" y="184" width="32" height="58" rx="15" fill="#1F1D4F"/>
+<circle cx="100" cy="213" r="7" fill="#F5A623"/>
+<circle cx="300" cy="213" r="7" fill="#F5A623"/>
+<path d="M98 240 Q102 292 156 298" fill="none" stroke="#1F1D4F" stroke-width="6" stroke-linecap="round"/>
+<circle cx="163" cy="298" r="10" fill="#F5A623"/><circle cx="62" cy="206" r="17" fill="#5A4BFF"/>
+<path d="M287 286 Q318 312 314 342" fill="none" stroke="#3F30DC" stroke-width="24" stroke-linecap="round"/>
+<circle cx="313" cy="348" r="17" fill="#5A4BFF"/>
+<ellipse cx="170" cy="205" rx="21" ry="25" fill="#FFFFFF"/>
+<ellipse cx="230" cy="205" rx="21" ry="25" fill="#FFFFFF"/>
+<circle cx="174" cy="210" r="11" fill="#14123A"/>
+<circle cx="234" cy="210" r="11" fill="#14123A"/>
+<circle cx="178" cy="204" r="4" fill="#FFFFFF"/>
+<circle cx="238" cy="204" r="4" fill="#FFFFFF"/>
+<ellipse cx="146" cy="246" rx="14" ry="8" fill="#FF8FB1" opacity="0.6"/>
+<ellipse cx="254" cy="246" rx="14" ry="8" fill="#FF8FB1" opacity="0.6"/>
+<path d="M182 246 Q200 266 218 246" fill="none" stroke="#14123A" stroke-width="5" stroke-linecap="round"/>
+</svg>

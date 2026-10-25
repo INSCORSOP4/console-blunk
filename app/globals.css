@@ -1,0 +1,711 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+@import "driver.js/dist/driver.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-body);
+  --font-mono: var(--font-mono-stack);
+  --font-heading: var(--font-display);
+  --font-display: var(--font-display);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-signal: var(--signal);
+  --color-signal-soft: var(--signal-soft);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-ok: var(--ok);
+  --color-ok-soft: var(--ok-soft);
+  --color-warn: var(--warn);
+  --color-warn-soft: var(--warn-soft);
+  --color-info: var(--info);
+  --color-info-soft: var(--info-soft);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+/*
+ * Paleta de la marca Blunk. Oscuro: fondo #08090A, texto #F7F8F8, acento #9A95FF (sin cambios).
+ * Claro: tokens tomados de la paleta real de https://yolani.co (fondo #FAFAF9, tinta #1C1917,
+ * azul #026DA7 / #0281C5, verde-azulado #168F98), medidos con getComputedStyle sobre su página.
+ * Los estados (peligro / ok / aviso / info) son funcionales, no de marca: se dejan igual en ambos temas.
+ */
+:root {
+  --font-display: var(--font-body);
+  --background: #fafaf9;
+  --foreground: #1c1917;
+  /* Tarjetas translúcidas: dejan ver el resplandor animado del fondo. */
+  --card: rgb(255 255 255 / 74%);
+  --card-foreground: #1c1917;
+  --popover: #ffffff;
+  --popover-foreground: #1c1917;
+  --primary: #026da7;
+  --primary-foreground: #ffffff;
+  --secondary: #f5f5f4;
+  --secondary-foreground: #1c1917;
+  --muted: #f5f5f4;
+  --muted-foreground: #57534e;
+  --accent: #efece9;
+  --accent-foreground: #1c1917;
+  --destructive: #9f3523;
+  --border: rgb(28 25 23 / 10%);
+  --input: #79716c;
+  --ring: #0281c5;
+  --signal: #026da7;
+  --signal-soft: rgb(2 109 167 / 8%);
+  --danger: #9f3523;
+  --danger-soft: rgb(178 64 42 / 7%);
+  --ok: #17623f;
+  --ok-soft: rgb(30 123 79 / 8%);
+  --warn: #7a5000;
+  --warn-soft: rgb(138 90 0 / 9%);
+  --info: #1d5c7a;
+  --info-soft: rgb(29 92 122 / 8%);
+  --chart-1: #026da7;
+  --chart-2: #17623f;
+  --chart-3: #7a5000;
+  --chart-4: #57534e;
+  --chart-5: #1d5c7a;
+  /* Yolani redondea bastante más que el estilo original (inputs ~12px); solo en claro. */
+  --radius: 0.75rem;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #1c1917;
+  --sidebar-primary: #026da7;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #f5f5f4;
+  --sidebar-accent-foreground: #1c1917;
+  --sidebar-border: rgb(28 25 23 / 10%);
+  --sidebar-ring: #0281c5;
+  --campo: #ffffff;
+  --punto: rgb(28 25 23 / 11%);
+  --brillo: rgb(2 129 197 / 22%);
+  --brillo-2: rgb(22 143 152 / 18%);
+  --h1-a: #1c1917;
+  --h1-b: #026da7;
+  --sombra-card: 0 1px 0 rgb(255 255 255 / 80%) inset, 0 10px 28px -18px rgb(28 25 23 / 28%);
+}
+
+/*
+ * Oscuro: tokens tomados del footer oscuro de https://yolani.co (su sitio no tiene modo oscuro
+ * propio, así que se usó esa sección como referencia), medidos con getComputedStyle: fondo navy
+ * #0B1220, superficies tipo cristal #141E34, bordes #242F42, texto #F1F5F9 / #BCC5D2, mismo azul
+ * de marca #0281C5 que en claro (visible en su patrón de rejilla al 8% de opacidad).
+ */
+.dark {
+  --background: #0b1220;
+  --foreground: #f1f5f9;
+  --card: rgb(20 30 52 / 60%);
+  --card-foreground: #f1f5f9;
+  --popover: #141e34;
+  --popover-foreground: #f1f5f9;
+  --primary: #026da7;
+  --primary-foreground: #ffffff;
+  --secondary: #141e34;
+  --secondary-foreground: #f1f5f9;
+  --muted: #141e34;
+  --muted-foreground: #bcc5d2;
+  --accent: rgb(241 245 249 / 7%);
+  --accent-foreground: #f1f5f9;
+  --destructive: #ff8f78;
+  --border: #242f42;
+  --input: #475569;
+  --ring: #38bdf8;
+  --signal: #38bdf8;
+  --signal-soft: rgb(56 189 248 / 12%);
+  --danger: #ff8f78;
+  --danger-soft: rgb(255 143 120 / 9%);
+  --ok: #6fd3a0;
+  --ok-soft: rgb(111 211 160 / 9%);
+  --warn: #f0c36a;
+  --warn-soft: rgb(240 195 106 / 9%);
+  --info: #7cc4e8;
+  --info-soft: rgb(124 196 232 / 9%);
+  --chart-1: #38bdf8;
+  --chart-2: #6fd3a0;
+  --chart-3: #f0c36a;
+  --chart-4: #bcc5d2;
+  --chart-5: #7cc4e8;
+  /* El redondeo mayor de Yolani se aplicó solo en claro; oscuro conserva el radio original. */
+  --radius: 0.375rem;
+  --sidebar: #141e34;
+  --sidebar-foreground: #f1f5f9;
+  --sidebar-primary: #026da7;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: rgb(241 245 249 / 7%);
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: #242f42;
+  --sidebar-ring: #38bdf8;
+  --campo: #141e34;
+  --punto: rgb(2 129 197 / 8%);
+  --brillo: rgb(2 129 197 / 30%);
+  --brillo-2: rgb(22 143 152 / 24%);
+  --h1-a: #f1f5f9;
+  --h1-b: #38bdf8;
+  --sombra-card: 0 1px 0 rgb(255 255 255 / 7%) inset, 0 14px 34px -20px rgb(0 0 0 / 85%);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    @apply font-sans;
+    color-scheme: light;
+  }
+  html.dark {
+    color-scheme: dark;
+  }
+  body {
+    @apply bg-background text-foreground;
+    /* Rejilla de puntos de la marca; el resplandor va en body::before. */
+    background-image: radial-gradient(var(--punto) 1px, transparent 1px);
+    background-size: 22px 22px;
+    text-rendering: optimizeLegibility;
+  }
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
+  }
+  ::selection {
+    background: color-mix(in srgb, var(--signal) 30%, transparent);
+  }
+  /* Foco visible en todos los controles propios (los de shadcn traen su propio anillo). */
+  :where(a, button, [role="tab"], [tabindex]):focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+}
+
+@layer utilities {
+  /* Cifras alineadas para KPIs y tablas. */
+  .num {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum";
+  }
+  .eyebrow {
+    font-family: var(--font-mono-stack);
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted-foreground);
+  }
+  /* Título con degradado de la marca y un destello índigo que lo recorre. */
+  .title-gradient {
+    background-image: linear-gradient(
+      100deg,
+      var(--h1-a) 0%,
+      var(--h1-a) 38%,
+      var(--h1-b) 50%,
+      var(--h1-a) 62%,
+      var(--h1-a) 100%
+    );
+    background-size: 260% 100%;
+    background-position: 100% 0;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    padding-bottom: 0.08em;
+    animation: destello 9s ease-in-out infinite;
+  }
+}
+
+/*
+ * Resplandor índigo de la marca: dos luces fijas que derivan despacio (15 s y 21 s).
+ * Solo se animan transform (compositor), sin repintar; no reciben eventos.
+ */
+body::before,
+body::after {
+  content: "";
+  position: fixed;
+  inset: -25%;
+  z-index: -1;
+  pointer-events: none;
+  will-change: transform;
+}
+body::before {
+  background: radial-gradient(closest-side at 68% 22%, var(--brillo), transparent);
+  animation: deriva-a 15s ease-in-out infinite;
+}
+body::after {
+  background: radial-gradient(closest-side at 18% 82%, var(--brillo-2), transparent);
+  animation: deriva-b 21s ease-in-out infinite;
+}
+
+@keyframes deriva-a {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  33% {
+    transform: translate3d(-22%, 12%, 0) scale(1.25);
+  }
+  66% {
+    transform: translate3d(-8%, 26%, 0) scale(0.92);
+  }
+}
+@keyframes deriva-b {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1.05);
+  }
+  40% {
+    transform: translate3d(24%, -14%, 0) scale(1.3);
+  }
+  70% {
+    transform: translate3d(10%, -28%, 0) scale(0.9);
+  }
+}
+@keyframes destello {
+  0%,
+  100% {
+    background-position: 100% 0;
+  }
+  50% {
+    background-position: 0% 0;
+  }
+}
+
+/* Campos de formulario con el relleno de la marca (gana a los utilitarios de shadcn). */
+[data-slot="input"],
+[data-slot="select-trigger"] {
+  background-color: var(--campo);
+}
+
+/* Superficie de tarjeta: reflejo superior sutil y sombra de profundidad. */
+.surface {
+  box-shadow: var(--sombra-card);
+}
+
+/* Objetivos táctiles de al menos 44 px en pantallas táctiles. */
+@media (pointer: coarse) {
+  .touch-target,
+  [data-slot="button"],
+  [data-slot="select-trigger"],
+  [data-slot="input"] {
+    min-height: 2.75rem;
+  }
+  [data-slot="button"] {
+    min-width: 2.75rem;
+  }
+}
+
+/* Entrada escalonada de bloques al cargar una página (150–300 ms por bloque, con escalón corto). */
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.rise {
+  animation: rise 0.3s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  animation-delay: calc(var(--i, 0) * 40ms);
+}
+/*
+ * Fondo del panel de bienvenida del login: dos luces que derivan despacio más un punteado que
+ * gira muy levemente. Amplitud deliberadamente pequeña (no se reusan deriva-a/b del sitio): este
+ * panel es mucho más chico que la pantalla completa, así que una deriva grande saca el borde de
+ * la caja del área visible. inset: -50% deja margen de sobra para el peor caso.
+ */
+.showcase-glow-a,
+.showcase-glow-b,
+.showcase-grid {
+  position: absolute;
+  inset: -50%;
+  pointer-events: none;
+  will-change: transform;
+}
+.showcase-glow-a {
+  background: radial-gradient(circle farthest-corner at 80% 15%, var(--brillo), transparent 70%);
+  animation: showcase-deriva-a 15s ease-in-out infinite;
+}
+.showcase-glow-b {
+  background: radial-gradient(circle farthest-corner at 15% 85%, var(--brillo-2), transparent 70%);
+  animation: showcase-deriva-b 21s ease-in-out infinite;
+}
+@keyframes showcase-deriva-a {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(-6%, 5%, 0) scale(1.08);
+  }
+}
+@keyframes showcase-deriva-b {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1.05);
+  }
+  50% {
+    transform: translate3d(5%, -6%, 0) scale(0.97);
+  }
+}
+.showcase-grid {
+  background-image: radial-gradient(var(--punto) 1px, transparent 1px);
+  background-size: 22px 22px;
+  animation: gira-punto 30s ease-in-out infinite;
+}
+@keyframes gira-punto {
+  0%,
+  100% {
+    transform: rotate(-1.5deg) scale(1.1);
+  }
+  50% {
+    transform: rotate(1.5deg) scale(1.1);
+  }
+}
+
+/* Linki en el login: flota muy levemente, como respirando. En un elemento aparte del que hace
+   el "rise" de entrada, porque animation es shorthand y pisaría la animación de entrada si
+   fueran la misma clase/elemento. */
+@keyframes linki-flotar {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-6px) rotate(-1deg);
+  }
+}
+.linki-flotar {
+  animation: linki-flotar 4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rise,
+  body::before,
+  body::after,
+  .title-gradient,
+  .showcase-glow-a,
+  .showcase-glow-b,
+  .showcase-grid,
+  .linki-flotar {
+    animation: none;
+  }
+  * {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Lector de notas (Markdown): tipografía propia con los colores de la marca.
+   El código usa los colores de gráficas, que ya están ajustados para AA en claro y oscuro.
+   --------------------------------------------------------------------------- */
+.prose-kb {
+  color: var(--foreground);
+  font-size: 1rem;
+  line-height: 1.75;
+  overflow-wrap: anywhere;
+}
+.prose-kb > :first-child {
+  margin-top: 0;
+}
+.prose-kb h1,
+.prose-kb h2,
+.prose-kb h3,
+.prose-kb h4 {
+  scroll-margin-top: 5rem;
+  font-weight: 650;
+}
+.prose-kb h1 {
+  font-size: 1.9rem;
+  line-height: 1.2;
+  margin: 2.2rem 0 1rem;
+}
+.prose-kb h2 {
+  font-size: 1.45rem;
+  line-height: 1.25;
+  margin: 2.2rem 0 0.8rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid var(--border);
+}
+.prose-kb h3 {
+  font-size: 1.15rem;
+  margin: 1.8rem 0 0.6rem;
+}
+.prose-kb h4 {
+  font-size: 1rem;
+  margin: 1.4rem 0 0.5rem;
+}
+.prose-kb p,
+.prose-kb ul,
+.prose-kb ol,
+.prose-kb blockquote,
+.prose-kb table,
+.prose-kb pre {
+  margin: 0 0 1.1rem;
+}
+.prose-kb ul {
+  list-style: disc;
+  padding-left: 1.5rem;
+}
+.prose-kb ol {
+  list-style: decimal;
+  padding-left: 1.5rem;
+}
+.prose-kb li {
+  margin: 0.25rem 0;
+}
+.prose-kb li > ul,
+.prose-kb li > ol {
+  margin: 0.25rem 0 0.25rem;
+}
+.prose-kb li::marker {
+  color: var(--muted-foreground);
+}
+.prose-kb input[type="checkbox"] {
+  margin-right: 0.5rem;
+  accent-color: var(--primary);
+}
+.prose-kb a {
+  color: var(--signal);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+}
+.prose-kb a:hover {
+  text-decoration-thickness: 2px;
+}
+.prose-kb .enlace-roto {
+  color: var(--danger);
+  text-decoration: underline dotted;
+  text-underline-offset: 3px;
+  cursor: help;
+}
+.prose-kb strong {
+  font-weight: 650;
+}
+.prose-kb hr {
+  border: 0;
+  border-top: 1px solid var(--border);
+  margin: 2rem 0;
+}
+.prose-kb blockquote {
+  border-left: 3px solid var(--signal);
+  background: var(--signal-soft);
+  padding: 0.6rem 1rem;
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  color: var(--foreground);
+}
+.prose-kb blockquote > :last-child {
+  margin-bottom: 0;
+}
+.prose-kb :not(pre) > code {
+  font-family: var(--font-mono-stack);
+  font-size: 0.86em;
+  background: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 0.1em 0.38em;
+}
+.prose-kb pre {
+  background: var(--campo);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1rem 1.1rem;
+  overflow-x: auto;
+  font-size: 0.86rem;
+  line-height: 1.6;
+  box-shadow: var(--sombra-card);
+}
+.prose-kb pre code {
+  font-family: var(--font-mono-stack);
+  background: none;
+  border: 0;
+  padding: 0;
+  font-size: inherit;
+  white-space: pre;
+  overflow-wrap: normal;
+}
+.prose-kb .tabla-scroll {
+  overflow-x: auto;
+  margin: 0 0 1.1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+}
+.prose-kb table {
+  margin: 0;
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 0.92rem;
+}
+.prose-kb th,
+.prose-kb td {
+  padding: 0.55rem 0.8rem;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  vertical-align: top;
+}
+.prose-kb th {
+  background: var(--muted);
+  font-weight: 600;
+  white-space: nowrap;
+}
+.prose-kb tr:last-child td {
+  border-bottom: 0;
+}
+
+/* Resaltado de sintaxis (highlight.js) */
+.hljs-comment,
+.hljs-quote {
+  color: var(--muted-foreground);
+  font-style: italic;
+}
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-literal,
+.hljs-doctag,
+.hljs-meta .hljs-keyword {
+  color: var(--chart-1);
+  font-weight: 600;
+}
+.hljs-string,
+.hljs-regexp,
+.hljs-addition,
+.hljs-meta .hljs-string {
+  color: var(--chart-2);
+}
+.hljs-number,
+.hljs-symbol,
+.hljs-bullet {
+  color: var(--chart-3);
+}
+.hljs-title,
+.hljs-title.function_,
+.hljs-section,
+.hljs-built_in,
+.hljs-selector-id,
+.hljs-selector-class {
+  color: var(--chart-5);
+}
+.hljs-type,
+.hljs-class .hljs-title,
+.hljs-title.class_ {
+  color: var(--chart-3);
+}
+.hljs-attr,
+.hljs-attribute,
+.hljs-name,
+.hljs-tag {
+  color: var(--chart-5);
+}
+.hljs-variable,
+.hljs-template-variable,
+.hljs-params {
+  color: var(--foreground);
+}
+.hljs-deletion {
+  color: var(--danger);
+}
+.hljs-emphasis {
+  font-style: italic;
+}
+.hljs-strong {
+  font-weight: 700;
+}
+
+mark.coincidencia {
+  background: color-mix(in srgb, var(--warn) 28%, transparent);
+  color: inherit;
+  border-radius: 3px;
+  padding: 0 0.1em;
+}
+
+/* Tour guiado (driver.js), restyleado con los tokens de Blunk. */
+.driver-popover.blunk-tour-popover {
+  background: var(--popover);
+  color: var(--popover-foreground);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--sombra-card);
+  font-family: var(--font-sans);
+  padding: 1rem 1.1rem;
+}
+.blunk-tour-popover .driver-popover-title {
+  color: var(--popover-foreground);
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+.blunk-tour-popover .driver-popover-description {
+  color: var(--muted-foreground);
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+.blunk-tour-popover .driver-popover-progress-text {
+  color: var(--muted-foreground);
+  font-size: 0.75rem;
+}
+.blunk-tour-popover button {
+  font-family: var(--font-sans);
+  border-radius: var(--radius-md);
+}
+.blunk-tour-popover .driver-popover-navigation-btns button {
+  background: var(--primary);
+  color: var(--primary-foreground);
+  border: none;
+  text-shadow: none;
+  padding: 0.35rem 0.75rem;
+}
+.blunk-tour-popover .driver-popover-prev-btn {
+  background: var(--accent);
+  color: var(--accent-foreground);
+}
+.blunk-tour-popover .driver-popover-close-btn {
+  color: var(--muted-foreground);
+  text-shadow: none;
+}
+.driver-popover-arrow-side-left.driver-popover-arrow {
+  border-left-color: var(--popover);
+}
+.driver-popover-arrow-side-right.driver-popover-arrow {
+  border-right-color: var(--popover);
+}
+.driver-popover-arrow-side-top.driver-popover-arrow {
+  border-top-color: var(--popover);
+}
+.driver-popover-arrow-side-bottom.driver-popover-arrow {
+  border-bottom-color: var(--popover);
+}
