@@ -2,7 +2,7 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { AlertTriangle, ChevronLeft, ChevronRight } from "lucide-react";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { PageHeader } from "@/components/shared/page-header";
 import { EmptyState, ErrorState } from "@/components/shared/states";
 import { TourButton } from "@/components/shared/tour-button";
@@ -67,6 +67,24 @@ export function ChecklistView({ config }: { config: ConfigBitacora }) {
         ? config.rutaBase
         : `${config.rutaBase}?fecha=${nuevaFecha}`,
     );
+
+  // Keyboard shortcuts para navegación de fechas
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+      
+      if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+        e.preventDefault();
+        irA(avanzar(config, fecha, e.key === "ArrowLeft" ? -1 : 1));
+      }
+      if (e.key === "t" && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault();
+        irA(fechaActual(config));
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [config, fecha]);
 
   const q = useChecklist(config.grupo, fecha);
   const items = useMemo(() => q.data?.items ?? [], [q.data]);
@@ -166,6 +184,28 @@ export function ChecklistView({ config }: { config: ConfigBitacora }) {
         />
       ) : (
         <>
+          {/* Barra de progreso del día */}
+          <div className="mb-5 rounded-xl border bg-card p-4">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-sm font-medium">Progreso del día</span>
+              <span className="text-sm text-muted-foreground">
+                {conteo.ok} de {items.length} completados
+              </span>
+            </div>
+            <div className="h-3 overflow-hidden rounded-full bg-muted">
+              <div
+                className="h-full rounded-full bg-ok transition-all duration-500"
+                style={{ width: `${(conteo.ok / items.length) * 100}%` }}
+              />
+            </div>
+            <div className="mt-2 flex justify-between text-xs text-muted-foreground">
+              <span className="text-ok">{conteo.ok} OK</span>
+              <span className="text-warn">{conteo.advertencia} Advertencia</span>
+              <span className="text-danger">{conteo.falla + conteo.critico} Con incidencia</span>
+              <span className="text-info">{conteo.pendiente} Pendientes</span>
+            </div>
+          </div>
+
           <dl data-tour="resumen" className="mb-5 grid grid-cols-2 gap-3 sm:grid-cols-5">
             {kpis.map(([nombre, valor, color]) => (
               <div key={nombre} className="surface bg-card rounded-xl border p-3">

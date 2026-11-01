@@ -1,8 +1,8 @@
 "use client";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Check, Loader2, Pencil } from "lucide-react";
-import { useState } from "react";
+import { Check, Clock, Loader2, Pencil, X } from "lucide-react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import type { EstadoChecklist, ItemChecklist } from "@/lib/api/bitacora-schemas";
 import { requiereObservacion } from "@/lib/bitacora/checklist";
@@ -22,10 +22,11 @@ export function FilaChecklist({
 }) {
   const queryClient = useQueryClient();
   const [observacion, setObservacion] = useState(item.observacion ?? "");
-  const [editando, setEditando] = useState<EstadoChecklist | null>(null); // estado que pide observación y está en edición
+  const [editando, setEditando] = useState<EstadoChecklist | null>(null);
   const [guardadoOk, setGuardadoOk] = useState(false);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const filaRef = useRef<HTMLLIElement>(null);
 
-  // Si llega una actualización del servidor (otra persona lo guardó) y no se está editando, se refleja el texto nuevo.
   const [previo, setPrevio] = useState(item.observacion);
   if (item.observacion !== previo && editando === null) {
     setPrevio(item.observacion);
@@ -57,20 +58,76 @@ export function FilaChecklist({
     guardar.reset();
     if (requiereObservacion(estado)) {
       setEditando(estado);
+      setTimeout(() => textareaRef.current?.focus(), 50);
       return;
     }
-    if (item.estado === estado) return; // ya estaba así: no hay nada que guardar
+    if (item.estado === estado) return;
     guardar.mutate({ estado, observacion: "" });
   }
+
+  // Keyboard shortcuts
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (e.target instanceof HTMLTextAreaElement || e.target instanceof HTMLInputElement) return;
+
+      const key = e.key.toLowerCase();
+      const shortcuts: Record<string, () => void> = {
+        o: () => elegir("Ok"),
+        a: () => elegir("Advertencia"),
+        f: () => elegir("Falla"),
+        c: () => elegir("Critico"),
+        n: () => elegir("NoAplica"),
+      };
+
+      if (shortcuts[key] && !guardar.isPending) {
+        e.preventDefault();
+        shortcuts[key]();
+      }
+
+      // Flechas para navegar entre filas
+      if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+        e.preventDefault();
+        const filas = Array.from(document.querySelectorAll('[data-fila-checklist]'));
+        const idx = filas.indexOf(filaRef.current!);
+        const siguiente = filas[idx + (e.key === "ArrowDown" ? 1 : -1)] as HTMLElement;
+        siguiente?.focus();
+      }
+    },
+    [guardar.isPending],
+  );
+
+  // Auto-save cuando se escribe observación
+  const [autoSaveTimer, setAutoSaveTimer] = useState<NodeJS.Timeout | null>(null);
+  useEffect(() => {
+    if (editando && observacion.trim().length > 0 && observacion !== item.observacion) {
+      if (autoSaveTimer) clearTimeout(autoSaveTimer);
+      const timer = setTimeout(() => {
+        if (observacion.trim()) {
+          guardar.mutate({ estado: editando, observacion });
+        }
+      }, 2000);
+      setAutoSaveTimer(timer);
+    }
+    return () => {
+      if (autoSaveTimer) clearTimeout(autoSaveTimer);
+    };
+  }, [observacion, editando]);
 
   const puedeGuardarObservacion = editando !== null && observacion.trim().length > 0;
 
   return (
     <li
+      ref={filaRef}
       id={`act-${item.actividadId}`}
+      data-fila-checklist
+      tabIndex={0}
+      onKeyDown={handleKeyDown}
       className={cn(
         "surface bg-card scroll-mt-20 rounded-xl border p-3.5",
         !item.actividadActiva && "opacity-70",
+        item.estado === "Ok" && "border-l-ok border-l-2",
+        item.estado === "Advertencia" && "border-l-warn border-l-2",
+        (item.estado === "Falla" || item.estado === "Critico") && "border-l-danger border-l-2",
       )}
     >
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -82,14 +139,19 @@ export function FilaChecklist({
             </p>
           )}
           {(item.actualizadoPor ?? item.revisadoPor) && (
-            <p className="text-muted-foreground num mt-0.5 font-mono text-xs">
+            <p className="text-muted-foreground num mt-0.5 flex items-center gap-1 font-mono text-xs">
+              <Clock className="size-3" />
               {item.actualizadoPor ?? item.revisadoPor} ·{" "}
               {fmtFecha(item.actualizadoEn ?? item.revisadoEn, "d MMM, HH:mm")}
             </p>
           )}
         </div>
         <div className="flex items-center gap-2">
-          {guardadoOk && <Check className="text-ok size-4" aria-hidden />}
+          {guardadoOk && (
+            <span className="flex items-center gap-1 text-xs text-ok">
+              <Check className="size-3.5" /> Guardado
+            </span>
+          )}
           {guardar.isPending && (
             <Loader2 className="text-muted-foreground size-4 animate-spin" aria-hidden />
           )}
@@ -106,24 +168,44 @@ export function FilaChecklist({
         <ObservacionGuardada
           estado={item.estado}
           texto={item.observacion}
-          onEditar={() => setEditando(item.estado!)}
+          onEditar={() => {
+            setEditando(item.estado!);
+            setTimeout(() => textareaRef.current?.focus(), 50);
+          }}
         />
       )}
 
       {editando !== null && (
         <div className="mt-3 space-y-2 border-t pt-3">
-          <label htmlFor={`obs-${item.actividadId}`} className="eyebrow block">
-            Qué pasó (obligatorio para guardar como {editando === "Critico" ? "Crítico" : editando})
+          <label htmlFor={`obs-${item.actividadId}`} className="eyebrow flex items-center gap-2 block">
+            <span>Qué pasó (obligatorio para </span>
+            <span className="font-medium text-warn">{editando === "Critico" ? "Crítico" : editando}</span>
+            <span>)</span>
+            {autoSaveTimer && observacion.trim() && (
+              <span className="text-muted-foreground text-xs flex items-center gap-1">
+                <Loader2 className="size-3 animate-spin" /> Guardando en 2s...
+              </span>
+            )}
           </label>
           <textarea
+            ref={textareaRef}
             id={`obs-${item.actividadId}`}
             value={observacion}
             onChange={(e) => setObservacion(e.target.value)}
             maxLength={1000}
-            rows={2}
-            autoFocus
-            className="bg-background w-full resize-y rounded-lg border px-3 py-2 text-sm"
-            placeholder="Describe la incidencia…"
+            rows={3}
+            className="bg-background w-full resize-y rounded-lg border px-3 py-2 text-sm focus:ring-2 focus:ring-primary/50"
+            placeholder="Describe la incidencia… (Enter para guardar automáticamente)"
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && e.ctrlKey && puedeGuardarObservacion) {
+                guardar.mutate({ estado: editando, observacion });
+              }
+              if (e.key === "Escape") {
+                setEditando(null);
+                setObservacion(item.observacion ?? "");
+                guardar.reset();
+              }
+            }}
           />
           {guardar.error && (
             <p role="alert" className="bg-danger-soft text-danger rounded-md px-2.5 py-1.5 text-xs">
@@ -132,27 +214,33 @@ export function FilaChecklist({
                 : "No se pudo guardar."}
             </p>
           )}
-          <div className="flex justify-end gap-2">
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              onClick={() => {
-                setEditando(null);
-                setObservacion(item.observacion ?? "");
-                guardar.reset();
-              }}
-            >
-              Cancelar
-            </Button>
-            <Button
-              type="button"
-              size="sm"
-              disabled={!puedeGuardarObservacion || guardar.isPending}
-              onClick={() => guardar.mutate({ estado: editando, observacion })}
-            >
-              {guardar.isPending ? <Loader2 className="animate-spin" /> : null} Guardar
-            </Button>
+          <div className="flex justify-between items-center">
+            <span className="text-muted-foreground text-xs">
+              Ctrl+Enter para guardar rápido · Esc para cancelar
+            </span>
+            <div className="flex gap-2">
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  setEditando(null);
+                  setObservacion(item.observacion ?? "");
+                  guardar.reset();
+                }}
+              >
+                <X className="size-4" /> Cancelar
+              </Button>
+              <Button
+                type="button"
+                size="sm"
+                disabled={!puedeGuardarObservacion || guardar.isPending}
+                onClick={() => guardar.mutate({ estado: editando, observacion })}
+              >
+                {guardar.isPending ? <Loader2 className="animate-spin" /> : <Check className="size-4" />} 
+                Guardar
+              </Button>
+            </div>
           </div>
         </div>
       )}
