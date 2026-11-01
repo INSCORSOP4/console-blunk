@@ -114,8 +114,8 @@
   --sidebar-ring: #0281c5;
   --campo: #ffffff;
   --punto: rgb(28 25 23 / 11%);
-  --brillo: rgb(2 129 197 / 22%);
-  --brillo-2: rgb(22 143 152 / 18%);
+  --brillo: rgb(2 129 197 / 45%);
+  --brillo-2: rgb(22 143 152 / 40%);
   --h1-a: #1c1917;
   --h1-b: #026da7;
   --sombra-card: 0 1px 0 rgb(255 255 255 / 80%) inset, 0 10px 28px -18px rgb(28 25 23 / 28%);
@@ -358,28 +358,34 @@ body::after {
 }
 .showcase-glow-a {
   background: radial-gradient(circle farthest-corner at 80% 15%, var(--brillo), transparent 70%);
-  animation: showcase-deriva-a 15s ease-in-out infinite;
+  animation: showcase-deriva-a 20s ease-in-out infinite;
 }
 .showcase-glow-b {
-  background: radial-gradient(circle farthest-corner at 15% 85%, var(--brillo-2), transparent 70%);
-  animation: showcase-deriva-b 21s ease-in-out infinite;
+  background: radial-gradient(circle farthest-corner at 20% 80%, var(--brillo-2), transparent 70%);
+  animation: showcase-deriva-b 20s ease-in-out infinite;
 }
 @keyframes showcase-deriva-a {
   0%,
   100% {
     transform: translate3d(0, 0, 0) scale(1);
   }
-  50% {
-    transform: translate3d(-6%, 5%, 0) scale(1.08);
+  33% {
+    transform: translate3d(-15%, 8%, 0) scale(1.15);
+  }
+  66% {
+    transform: translate3d(-8%, 15%, 0) scale(0.95);
   }
 }
 @keyframes showcase-deriva-b {
   0%,
   100% {
-    transform: translate3d(0, 0, 0) scale(1.05);
+    transform: translate3d(0, 0, 0) scale(1);
   }
-  50% {
-    transform: translate3d(5%, -6%, 0) scale(0.97);
+  40% {
+    transform: translate3d(15%, -10%, 0) scale(1.18);
+  }
+  70% {
+    transform: translate3d(8%, -18%, 0) scale(0.92);
   }
 }
 .showcase-grid {
