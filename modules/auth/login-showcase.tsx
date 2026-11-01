@@ -1,71 +1,80 @@
-import { AlertTriangle, Clock, TicketCheck } from "lucide-react";
+import { ArrowRight, CheckCircle2, Shield, Users, Workflow } from "lucide-react";
 import Image from "next/image";
-import type { CSSProperties } from "react";
-import { cn } from "@/lib/utils";
 
 /**
- * Panel decorativo del login (solo visible en pantallas grandes). Todo el contenido es
- * estático / de ejemplo — no llama a la API — pensado para transmitir qué hace el sistema.
+ * Panel decorativo del login (solo visible en pantallas grandes).
+ * Diseño minimalista estilo dealor.mx - solo lo esencial.
  */
 export function LoginShowcase() {
   return (
-    <div className="relative isolate hidden h-full overflow-hidden lg:flex lg:flex-col lg:justify-center lg:px-16 lg:py-10 xl:px-20">
+    <div className="relative isolate hidden h-full overflow-hidden lg:flex lg:flex-col lg:justify-center lg:px-12 xl:px-16">
+      {/* Fondo minimalista */}
       <div aria-hidden className="absolute inset-0 -z-10 overflow-hidden">
         <div className="showcase-glow-a" />
         <div className="showcase-glow-b" />
         <div className="showcase-grid" />
       </div>
 
-      <span className="bg-ok-soft text-ok inline-flex w-fit items-center gap-2 rounded-full px-3 py-1 text-xs font-medium">
-        <span className="bg-ok size-1.5 rounded-full" aria-hidden />
-        Bitácora de hoy · en orden
-      </span>
+      {/* Contenido centrado y limpio */}
+      <div className="mx-auto max-w-md">
+        {/* Heading principal */}
+        <h2 className="font-display text-3xl font-semibold tracking-tight">
+          Tu centro de control
+        </h2>
+        <p className="text-muted-foreground mt-2 text-sm">
+          Todo tu soporte en un solo lugar
+        </p>
 
-      <h2 className="font-display mt-6 max-w-sm text-4xl leading-[1.1] font-semibold tracking-tight">
-        Todo tu soporte, en un solo lugar.
-      </h2>
-      <p className="text-muted-foreground mt-3 max-w-sm text-sm">
-        Tickets, bitácora, jobs y archivos de confianza — sin perseguir nada por separado.
-      </p>
-
-      <div
-        className="surface bg-card rise mt-10 w-full max-w-sm rounded-xl border p-5 shadow-[var(--sombra-card)]"
-        style={{ "--i": 1 } as CSSProperties}
-      >
-        <div className="flex items-center justify-between">
-          <p className="eyebrow">Tablero</p>
-          <span className="text-muted-foreground flex items-center gap-1.5 text-xs">
-            <span className="bg-ok size-1.5 animate-pulse rounded-full" aria-hidden />
-            En vivo
-          </span>
-        </div>
-
-        <div className="mt-4 grid grid-cols-3 gap-3">
-          <Kpi label="Abiertos" value="42" tone="signal" />
-          <Kpi label="Vencidos" value="3" tone="danger" />
-          <Kpi label="SLA" value="96%" tone="ok" />
-        </div>
-
-        <ul className="mt-5 space-y-2.5 border-t pt-4">
-          <TicketRow
-            icono={AlertTriangle}
-            tono="warn"
-            texto="Sin acceso a facturación"
-            meta="Vence en 2 h"
-          />
-          <TicketRow
-            icono={TicketCheck}
-            tono="ok"
-            texto="Reinicio de servicio OLAP"
-            meta="Resuelto"
-          />
+        {/* Features minimalistas */}
+        <ul className="mt-8 space-y-4">
+          <li className="flex items-center gap-3 text-sm">
+            <div className="flex size-8 items-center justify-center rounded-lg bg-ok/10">
+              <Workflow className="size-4 text-ok" />
+            </div>
+            <span>Gestión de tickets en tiempo real</span>
+          </li>
+          <li className="flex items-center gap-3 text-sm">
+            <div className="flex size-8 items-center justify-center rounded-lg bg-signal/10">
+              <Users className="size-4 text-signal" />
+            </div>
+            <span>Bitácora de actividades</span>
+          </li>
+          <li className="flex items-center gap-3 text-sm">
+            <div className="flex size-8 items-center justify-center rounded-lg bg-warn/10">
+              <Shield className="size-4 text-warn" />
+            </div>
+            <span>Jobs automatizados</span>
+          </li>
         </ul>
+
+        {/* Estado activo */}
+        <div className="mt-8 flex items-center gap-2 text-xs">
+          <span className="flex size-2 items-center justify-center">
+            <span className="absolute inline-flex size-2 animate-ping rounded-full bg-ok opacity-75" />
+            <span className="relative inline-flex size-2 rounded-full bg-ok" />
+          </span>
+          <span className="text-muted-foreground">Sistema operando con normalidad</span>
+        </div>
+
+        {/* Stats simples */}
+        <div className="mt-6 flex gap-6">
+          <div>
+            <p className="text-2xl font-semibold text-signal">42</p>
+            <p className="text-muted-foreground text-xs">tickets abiertos</p>
+          </div>
+          <div>
+            <p className="text-2xl font-semibold text-ok">98%</p>
+            <p className="text-muted-foreground text-xs">SLA cumplimiento</p>
+          </div>
+          <div>
+            <p className="text-2xl font-semibold text-warn">12</p>
+            <p className="text-muted-foreground text-xs">usuarios en línea</p>
+          </div>
+        </div>
       </div>
 
-      <div
-        className="rise pointer-events-none absolute right-6 bottom-0 hidden w-32 xl:block"
-        style={{ "--i": 2 } as CSSProperties}
-      >
+      {/* Mascota sutil */}
+      <div className="pointer-events-none absolute right-8 bottom-8 hidden w-24 xl:block">
         <Image
           src="/mascota/linki-hola.svg"
           alt=""
@@ -74,43 +83,9 @@ export function LoginShowcase() {
           height={429}
           priority
           unoptimized
-          className="linki-flotar w-full"
+          className="linki-flotar w-full opacity-80"
         />
       </div>
     </div>
-  );
-}
-
-function Kpi({ label, value, tone }: { label: string; value: string; tone: "signal" | "danger" | "ok" }) {
-  const color = { signal: "text-signal", danger: "text-danger", ok: "text-ok" }[tone];
-  return (
-    <div>
-      <p className="text-muted-foreground text-[0.65rem] tracking-wide uppercase">{label}</p>
-      <p className={cn("num font-display mt-0.5 text-xl font-semibold", color)}>{value}</p>
-    </div>
-  );
-}
-
-function TicketRow({
-  icono: Icono,
-  tono,
-  texto,
-  meta,
-}: {
-  icono: typeof AlertTriangle;
-  tono: "warn" | "ok";
-  texto: string;
-  meta: string;
-}) {
-  const color = tono === "warn" ? "text-warn" : "text-ok";
-  return (
-    <li className="flex items-center gap-2.5 text-sm">
-      <Icono className={cn("size-4 shrink-0", color)} aria-hidden />
-      <span className="flex-1 truncate">{texto}</span>
-      <span className="text-muted-foreground flex items-center gap-1 text-xs whitespace-nowrap">
-        <Clock className="size-3" aria-hidden />
-        {meta}
-      </span>
-    </li>
   );
 }
