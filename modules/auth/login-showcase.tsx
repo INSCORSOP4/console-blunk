@@ -1,18 +1,23 @@
-import { ArrowRight, CheckCircle2, Shield, Users, Workflow } from "lucide-react";
+"use client";
+
+import { ArrowRight, CheckCircle2, Pause, Play, Shield, Users, Workflow } from "lucide-react";
 import Image from "next/image";
+import { useState } from "react";
 
 /**
  * Panel decorativo del login (solo visible en pantallas grandes).
  * Diseño minimalista estilo dealor.mx - solo lo esencial.
  */
 export function LoginShowcase() {
+  const [pausado, setPausado] = useState(false);
+
   return (
     <div className="relative isolate hidden h-full overflow-hidden lg:flex lg:flex-col lg:justify-center lg:px-12 xl:px-16">
       {/* Fondo minimalista */}
       <div aria-hidden className="absolute inset-0 -z-10 overflow-hidden">
-        <div className="showcase-glow-a" />
-        <div className="showcase-glow-b" />
-        <div className="showcase-grid" />
+        <div className={`showcase-glow-a ${pausado ? "pausado" : ""}`} />
+        <div className={`showcase-glow-b ${pausado ? "pausado" : ""}`} />
+        <div className={`showcase-grid ${pausado ? "pausado" : ""}`} />
       </div>
 
       {/* Contenido centrado y limpio */}
@@ -71,6 +76,16 @@ export function LoginShowcase() {
             <p className="text-muted-foreground text-xs">usuarios en línea</p>
           </div>
         </div>
+
+        {/* Botón de pausa */}
+        <button
+          onClick={() => setPausado(!pausado)}
+          className="mt-6 inline-flex items-center gap-1.5 rounded-md bg-white/5 px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:bg-white/10 hover:text-foreground"
+          aria-label={pausado ? "Reanudar animación" : "Pausar animación"}
+        >
+          {pausado ? <Play className="size-3.5" /> : <Pause className="size-3.5" />}
+          {pausado ? "Animación activa" : "Detener animación"}
+        </button>
       </div>
 
       {/* Mascota sutil */}
