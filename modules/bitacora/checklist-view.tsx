@@ -27,6 +27,7 @@ import { articuloPlural, type ConfigBitacora } from "@/lib/bitacora/grupos";
 import { fmtFecha, fmtNum } from "@/lib/format";
 import type { DriveStep } from "@/lib/tour/driver";
 import { cn } from "@/lib/utils";
+import { CalendarioResumen } from "./calendario-resumen";
 import { FilaChecklist } from "./fila-checklist";
 import { BitacoraSubnav } from "./subnav";
 
@@ -168,6 +169,10 @@ export function ChecklistView({ config }: { config: ConfigBitacora }) {
           <p className="text-muted-foreground text-sm">Revisó: {revisores.join(", ")}</p>
         )}
       </div>
+
+      {config.granularidad === "dia" && (
+        <CalendarioResumen config={config} fechaSeleccionada={fecha} onSeleccionar={irA} />
+      )}
 
       {q.error && !q.data ? (
         <ErrorState error={q.error} onRetry={() => q.refetch()} />

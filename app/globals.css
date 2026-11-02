@@ -274,11 +274,14 @@ body::after {
   100% {
     transform: translate3d(0, 0, 0) scale(1);
   }
-  33% {
-    transform: translate3d(-22%, 12%, 0) scale(1.25);
+  25% {
+    transform: translate3d(-15%, 8%, 0) scale(1.12);
   }
-  66% {
-    transform: translate3d(-8%, 26%, 0) scale(0.92);
+  50% {
+    transform: translate3d(-22%, 18%, 0) scale(1.08);
+  }
+  75% {
+    transform: translate3d(-8%, 12%, 0) scale(1.15);
   }
 }
 @keyframes deriva-b {
@@ -286,12 +289,44 @@ body::after {
   100% {
     transform: translate3d(0, 0, 0) scale(1.05);
   }
-  40% {
-    transform: translate3d(24%, -14%, 0) scale(1.3);
+  25% {
+    transform: translate3d(18%, -10%, 0) scale(1.2);
   }
-  70% {
-    transform: translate3d(10%, -28%, 0) scale(0.9);
+  50% {
+    transform: translate3d(28%, -18%, 0) scale(1.15);
   }
+  75% {
+    transform: translate3d(12%, -8%, 0) scale(1.1);
+  }
+}
+
+/* El fondo operativo se dibuja dentro del panel de la aplicación, no en body. */
+body.fondo-app-activo::before,
+body.fondo-app-activo::after {
+  animation: none;
+  opacity: 0;
+}
+
+/* Fondo base: replica el degradado de reserva de Dealor. */
+.app-fluid-background {
+  background:
+    radial-gradient(
+      ellipse 58% 46% at 62% 48%,
+      color-mix(in srgb, var(--signal) 24%, transparent) 0%,
+      color-mix(in srgb, var(--info) 14%, transparent) 42%,
+      transparent 72%
+    ),
+    linear-gradient(
+      to bottom,
+      var(--background) 54%,
+      color-mix(in srgb, var(--background) 88%, var(--signal-soft))
+    );
+}
+
+/* Estado pausado: una sola superficie sólida. */
+.app-solid-background,
+body.fondo-app-pausado .app-fluid-background {
+  background: var(--background);
 }
 @keyframes destello {
   0%,
@@ -357,35 +392,61 @@ body::after {
   will-change: transform;
 }
 .showcase-glow-a {
-  background: radial-gradient(circle farthest-corner at 80% 15%, var(--brillo), transparent 70%);
-  animation: showcase-deriva-a 20s ease-in-out infinite;
+  background: radial-gradient(ellipse 120% 80% at 70% 20%, var(--brillo), transparent 65%);
+  animation: showcase-deriva-a 25s ease-in-out infinite;
 }
 .showcase-glow-b {
-  background: radial-gradient(circle farthest-corner at 20% 80%, var(--brillo-2), transparent 70%);
-  animation: showcase-deriva-b 20s ease-in-out infinite;
+  background: radial-gradient(ellipse 100% 90% at 25% 75%, var(--brillo-2), transparent 60%);
+  animation: showcase-deriva-b 25s ease-in-out infinite;
+}
+.showcase-glow-a.pausado,
+.showcase-glow-b.pausado,
+.showcase-grid.pausado {
+  animation: none;
+  transform: translate3d(0, 0, 0) scale(1);
+}
+.showcase-glow-a.pausado {
+  background: radial-gradient(ellipse 100% 70% at 70% 20%, var(--brillo), transparent 55%);
+}
+.showcase-glow-b.pausado {
+  background: radial-gradient(ellipse 80% 70% at 25% 75%, var(--brillo-2), transparent 50%);
 }
 @keyframes showcase-deriva-a {
   0%,
   100% {
     transform: translate3d(0, 0, 0) scale(1);
+    opacity: 1;
   }
-  33% {
-    transform: translate3d(-15%, 8%, 0) scale(1.15);
+  25% {
+    transform: translate3d(-8%, 5%, 0) scale(1.08);
+    opacity: 0.9;
   }
-  66% {
-    transform: translate3d(-8%, 15%, 0) scale(0.95);
+  50% {
+    transform: translate3d(-12%, 10%, 0) scale(1.12);
+    opacity: 1;
+  }
+  75% {
+    transform: translate3d(-5%, 8%, 0) scale(1.05);
+    opacity: 0.85;
   }
 }
 @keyframes showcase-deriva-b {
   0%,
   100% {
     transform: translate3d(0, 0, 0) scale(1);
+    opacity: 1;
   }
-  40% {
-    transform: translate3d(15%, -10%, 0) scale(1.18);
+  30% {
+    transform: translate3d(10%, -8%, 0) scale(1.1);
+    opacity: 0.85;
   }
-  70% {
-    transform: translate3d(8%, -18%, 0) scale(0.92);
+  60% {
+    transform: translate3d(15%, -5%, 0) scale(1.15);
+    opacity: 1;
+  }
+  80% {
+    transform: translate3d(8%, -12%, 0) scale(1.08);
+    opacity: 0.9;
   }
 }
 .showcase-grid {

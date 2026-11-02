@@ -49,6 +49,7 @@ export function SubirView() {
   const [progreso, setProgreso] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [informe, setInforme] = useState<InformeImportacion | null>(null);
+  const [archivosExpandidos, setArchivosExpandidos] = useState(false);
 
   const subiendo = progreso !== null;
   const raiz = useMemo(() => raizComun(entradas), [entradas]);
@@ -71,9 +72,13 @@ export function SubirView() {
     setInforme(null);
     setEntradas((previas) => {
       const porRuta = new Map(previas.map((e) => [e.ruta, e]));
-      for (const e of aceptadas) porRuta.set(e.ruta, e); // si se repite una ruta gana la más reciente
+      for (const e of aceptadas) porRuta.set(e.ruta, e);
       return [...porRuta.values()];
     });
+  }
+
+  function quitar(ruta: string) {
+    setEntradas((prev) => prev.filter((e) => e.ruta !== ruta));
   }
 
   function alElegir(input: HTMLInputElement | null) {
@@ -222,18 +227,42 @@ export function SubirView() {
                   )}{" "}
                   · {formatearBytes(bytes)}
                 </p>
-                <Button variant="ghost" size="sm" onClick={limpiar} disabled={subiendo}>
-                  <Trash2 /> Quitar todo
-                </Button>
+                <div className="flex gap-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setArchivosExpandidos(!archivosExpandidos)}
+                    disabled={subiendo}
+                  >
+                    {archivosExpandidos ? "Colapsar" : `Ver ${finales.length}`}
+                  </Button>
+                  <Button variant="ghost" size="sm" onClick={limpiar} disabled={subiendo}>
+                    <Trash2 /> Quitar todo
+                  </Button>
+                </div>
               </div>
 
-              <ul className="text-muted-foreground mt-3 space-y-0.5 font-mono text-xs">
-                {finales.slice(0, 8).map((e) => (
-                  <li key={e.ruta} className="truncate" title={e.ruta}>
-                    {e.ruta}
+              <ul className="text-muted-foreground mt-3 space-y-1 font-mono text-xs">
+                {(archivosExpandidos ? finales : finales.slice(0, 6)).map((e) => (
+                  <li
+                    key={e.ruta}
+                    className="group flex items-center justify-between truncate rounded px-2 py-1 hover:bg-muted"
+                    title={e.ruta}
+                  >
+                    <span className="truncate flex-1">{e.ruta}</span>
+                    <button
+                      onClick={() => quitar(e.ruta)}
+                      disabled={subiendo}
+                      className="ml-2 opacity-0 group-hover:opacity-100 text-danger hover:bg-danger-soft rounded p-1 transition-opacity"
+                      title="Quitar"
+                    >
+                      <Trash2 className="size-3" />
+                    </button>
                   </li>
                 ))}
-                {finales.length > 8 && <li>… y {finales.length - 8} más</li>}
+                {!archivosExpandidos && finales.length > 6 && (
+                  <li className="text-muted-foreground">… y {finales.length - 6} más</li>
+                )}
               </ul>
 
               {raiz && zips === 0 && (

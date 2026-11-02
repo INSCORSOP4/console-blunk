@@ -5,14 +5,18 @@ import {
   ClipboardList,
   History,
   LayoutDashboard,
+  Pause,
+  Play,
   Ticket,
   Users,
   Wrench,
 } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
+import { Suspense, useState, useEffect, useCallback } from "react";
 import { cn } from "@/lib/utils";
 import { BrandMark } from "./brand-mark";
+import { FluidBackground } from "./fluid-background";
 import { ThemeToggle } from "./theme-toggle";
 import { LogoutButton, UserMenu } from "./user-menu";
 
@@ -26,9 +30,54 @@ const NAV = [
   { href: "/auditoria", label: "Auditoría", icon: History },
 ] as const;
 
-export function AppShell({ children }: { children: React.ReactNode }) {
+// Componente interno que usa useSearchParams
+function AppShellContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const isActive = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
+
+  // Estado para controlar la animación del fondo
+  const [animacionActiva, setAnimacionActiva] = useState(true);
+
+  // Sincronizar con query param
+  useEffect(() => {
+    const anim = searchParams.get("animacion");
+    if (anim !== null) {
+      setAnimacionActiva(anim === "true");
+    }
+  }, [searchParams]);
+
+  // Función para togglear animación
+  const toggleAnimacion = useCallback(() => {
+    const nuevaActiva = !animacionActiva;
+    setAnimacionActiva(nuevaActiva);
+    // Guardar preferencia en sessionStorage
+    if (typeof window !== "undefined") {
+      sessionStorage.setItem("animacion-fondo", String(nuevaActiva));
+    }
+  }, [animacionActiva]);
+
+  // Restaurar preferencia al cargar
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const pref = sessionStorage.getItem("animacion-fondo");
+      if (pref !== null) {
+        setAnimacionActiva(pref === "true");
+      }
+    }
+  }, []);
+
+  // El fondo de la app reemplaza los resplandores globales mientras está activa.
+  useEffect(() => {
+    if (pathname === "/login") return;
+
+    document.body.classList.add("fondo-app-activo");
+    document.body.classList.toggle("fondo-app-pausado", !animacionActiva);
+
+    return () => {
+      document.body.classList.remove("fondo-app-activo", "fondo-app-pausado");
+    };
+  }, [animacionActiva, pathname]);
 
   // La pantalla de login se muestra sin barra lateral ni navegación.
   if (pathname === "/login") return <>{children}</>;
@@ -91,7 +140,35 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </div>
       </aside>
 
-      <div className="flex min-w-0 flex-col">
+      <div className="bg-background relative isolate z-0 flex min-w-0 flex-col overflow-hidden">
+        <FluidBackground isAnimating={animacionActiva} />
+        <div
+          className={cn(
+            "pointer-events-none absolute inset-0 -z-10",
+            animacionActiva ? "app-fluid-background" : "app-solid-background",
+          )}
+          aria-hidden="true"
+        />
+
+        {/* Botón de pausa de animación (solo en desktop) */}
+        <button
+          onClick={toggleAnimacion}
+          className="text-muted-foreground/60 hover:text-foreground absolute top-3 right-4 z-40 hidden items-center gap-1.5 rounded-md p-1.5 text-xs transition-colors lg:flex"
+          title={animacionActiva ? "Detener animación" : "Activar animación"}
+        >
+          {animacionActiva ? (
+            <>
+              <Pause className="size-3.5" />
+              <span>Pausar</span>
+            </>
+          ) : (
+            <>
+              <Play className="size-3.5" />
+              <span>Animar</span>
+            </>
+          )}
+        </button>
+
         {/* Barra superior (móvil): objetivos de 44 px */}
         <header className="bg-background/90 sticky top-0 z-30 flex items-center justify-between gap-2 border-b px-3 py-1.5 backdrop-blur lg:hidden">
           <Link
@@ -132,5 +209,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </main>
       </div>
     </div>
+  );
+}
+
+// Componente wrapper con Suspense para useSearchParams
+export function AppShell({ children }: { children: React.ReactNode }) {
+  return (
+    <Suspense fallback={null}>
+      <AppShellContent>{children}</AppShellContent>
+    </Suspense>
   );
 }
